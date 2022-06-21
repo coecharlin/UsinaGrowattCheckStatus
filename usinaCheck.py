@@ -21,6 +21,7 @@ dictUsina = {
 deviceStatus
     2 Conectado
     4 Anormal
+    1 Esperando
 """
 
 

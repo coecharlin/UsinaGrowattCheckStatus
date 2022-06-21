@@ -1,3 +1,4 @@
+from ast import Param
 import json
 import requests
 import telebot
@@ -8,7 +9,7 @@ session = requests.Session()
 
 class GrowattApi:
 
-    server_url = 'http://server.growatt.com/login'
+    server_url = 'http://server.growatt.com/login/toSharePlant/85AF9942EEC03C351D39D9E5DBE387F208D6904CE2151AD38FF249B3786234B9A5ECCF246BCB86447FD92A7E26F3270C'
 
     def getWeatherByPlantId(self, plantId):
         session.get(self.server_url)
@@ -121,11 +122,11 @@ class GrowattApi:
 
 api = GrowattApi()
 
-getPlantData = api.getPlantData(plantId)
-getInvTotalData = api.getInvTotalData(plantId)
-getPlantTotalData = api.getPlantTotalData(plantId)
-getInverterList2 = api.getInverterList2(plantId)
-getDeviceInfo = api.getDeviceInfo(plantId, 'datalog', 'snDevice')
+getPlantData = api.getPlantData(644575)
+getInvTotalData = api.getInvTotalData(644575)
+getPlantTotalData = api.getPlantTotalData(644575)
+getInverterList2 = api.getInverterList2(644575)
+getDeviceInfo = api.getDeviceInfo(644575, 'datalog', 'RID0B040Z1')
 dictGrowattApi = {
     'co2': getPlantData['obj']['co2'],
     'tree': getPlantData['obj']['tree'],
@@ -149,8 +150,8 @@ dictGrowattApi = {
 }
 
 # Send data to Telegram
-bot = telebot.TeleBot('botTokenHere')
-chatID = 'chatIdHere'
+bot = telebot.TeleBot('1432121388:AAFd_UVoDCSFmKb7uiD3EUzor8q4djHIPVA')
+chatID = '1206596200'
 
 
 @bot.message_handler(commands=['contribuicaosocial'])
