@@ -2,11 +2,11 @@ import telebot
 import growattServer
 
 api = growattServer.GrowattApi()
-login_response = api.login("username", "password")
-device_list = api.device_list("plant_id")
-inverter_detail = api.inverter_detail("inverter_id")
-inverter_data = api.inverter_data("inverter_id")
-plant_list = api.plant_list("plant_id")
+login_response = api.login("Caroline Fernandes", "Lightenergy")
+device_list = api.device_list(644575)
+inverter_detail = api.inverter_detail("DYH0B0601M")
+inverter_data = api.inverter_data("DYH0B0601M")
+plant_list = api.plant_list(644575)
 dictUsina = {
     'plantName': login_response['data'][0]
     ['plantName'],
@@ -23,9 +23,10 @@ deviceStatus
     4 Anormal
 """
 
+
 # Send data to Telegram
-bot = telebot.TeleBot("botTokenHere")
-chatID = 'chatIdHere'
+bot = telebot.TeleBot("1432121388:AAFd_UVoDCSFmKb7uiD3EUzor8q4djHIPVA")
+chatID = '1206596200'
 
 # Check usina Status
 if dictUsina['lostStatus'] == False:
@@ -52,7 +53,7 @@ if dictUsina['lostStatus'] == False:
 
 
 @bot.message_handler(commands=['detalhePlanta', 'help'])
-def send_welcome(message):
+def send_message(message):
     bot.reply_to(message, 'Informação da Planta! \n'
                  'Nome da Usina: {} \n'
                  'Geração Hoje: {} \n'
@@ -62,4 +63,4 @@ def send_welcome(message):
                  'Ultima atualização: ')
 
 
-bot.infinity_polling()
+# bot.infinity_polling()
