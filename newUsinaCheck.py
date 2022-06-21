@@ -126,6 +126,36 @@ getInvTotalData = api.getInvTotalData(plantId)
 getPlantTotalData = api.getPlantTotalData(plantId)
 getInverterList2 = api.getInverterList2(plantId)
 getDeviceInfo = api.getDeviceInfo(plantId, 'datalog', 'snDevice')
+
+status = int(getInverterList2['datas'][0]['status'])
+
+
+match status:
+    case 1:
+        status = "1-Connection"
+    case 2:
+        status = "2-Checking"
+    case 3:
+        status = "3-Malfunction"
+    case 4:
+        status = "4-Keep"
+    case "":
+        status = "Lost"
+
+
+simSignal = int(getDeviceInfo['obj']['simSignal'])
+
+
+if simSignal <= 0 and simSignal >= -50:
+    simSignal = 'Excellent(' + str(simSignal)+')'
+elif simSignal <= -51 and simSignal >= -75:
+    simSignal = 'Good(' + str(simSignal)+')'
+elif simSignal <= -76 and simSignal >= -113:
+    simSignal = 'Poor(' + str(simSignal)+')'
+else:
+    "Erro ao receber os dados"
+
+
 dictGrowattApi = {
     'co2': getPlantData['obj']['co2'],
     'tree': getPlantData['obj']['tree'],
@@ -142,10 +172,10 @@ dictGrowattApi = {
     'pac': getInverterList2['datas'][0]['pac'],
     'sn': getInverterList2['datas'][0]['sn'],
     'plantName': getInverterList2['datas'][0]['plantName'],
-    'status': getInverterList2['datas'][0]['status'],
+    'status': status,
     'ipAndPort': getDeviceInfo['obj']['ipAndPort'],
     'deviceType': getDeviceInfo['obj']['deviceType'],
-    'simSignal': getDeviceInfo['obj']['simSignal'],
+    'simSignal': simSignal,
 }
 
 # Send data to Telegram
@@ -197,15 +227,17 @@ def send_message(message):
 
 @bot.message_handler(commands=['status'])
 def send_message(message):
-    bot.reply_to(message, '* Nome da Usina:* {} \n'
+    bot.reply_to(message, 'Nome da Usina: {} \n'
                  'Potencia Atual: {} (W) \n'
                  'Geracao Hoje: {} (kWh) \n'
                  'Status da conexão: {} \n'
+                 'Qualidade da conexão: {} \n'
                  'Ultima atualização: {}'.format(
                      dictGrowattApi['plantName'],
                      dictGrowattApi['pac'],
                      dictGrowattApi['eToday'],
                      dictGrowattApi['status'],
+                     dictGrowattApi['simSignal'],
                      dictGrowattApi['lastUpdateTime']
                  ))
 
