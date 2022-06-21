@@ -23,6 +23,7 @@ This Python 3 script logs into server.growatt.com, retrieves the data of your so
  - By default, the requests module is missing, so install it using pip: `sudo pip install requests`
  - Then call the script using `python3 growatt.py` 
  - You can schedule the script using the Task Scheduler in Synology.
+ - `sudo pip install pyTelegramBotAPI`
  
  ## Acknowledgements:
  Many thanks to @Sjord for reverse engineering Growatt's API!
