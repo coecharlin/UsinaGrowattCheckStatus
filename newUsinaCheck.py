@@ -8,7 +8,7 @@ session = requests.Session()
 
 class GrowattApi:
 
-    server_url = 'http://server.growatt.com/login'
+    server_url = 'http://server.growatt.com/login/toSharePlant/85AF9942EEC03C351D39D9E5DBE387F208D6904CE2151AD38FF249B3786234B9A5ECCF246BCB86447FD92A7E26F3270C'
 
     def getWeatherByPlantId(self, plantId):
         session.get(self.server_url)
@@ -121,37 +121,33 @@ class GrowattApi:
 
 api = GrowattApi()
 
-getPlantData = api.getPlantData(plantId)
-getInvTotalData = api.getInvTotalData(plantId)
-getPlantTotalData = api.getPlantTotalData(plantId)
-getInverterList2 = api.getInverterList2(plantId)
-getDeviceInfo = api.getDeviceInfo(plantId, 'datalog', 'snDevice')
+getPlantData = api.getPlantData(644575)
+getInvTotalData = api.getInvTotalData(644575)
+getPlantTotalData = api.getPlantTotalData(644575)
+getInverterList2 = api.getInverterList2(644575)
+getDeviceInfo = api.getDeviceInfo(644575, 'datalog', 'RID0B040Z1')
 
 status = int(getInverterList2['datas'][0]['status'])
-
-
 match status:
     case 1:
-        status = "1-Connection"
+        status = "1-Conectado"
     case 2:
-        status = "2-Checking"
+        status = "2-Aguardando"
     case 3:
-        status = "3-Malfunction"
+        status = "3-Apresentando problemas"
     case 4:
         status = "4-Keep"
-    case "":
-        status = "Lost"
+    case -1:
+        status = "Desconectado"
 
 
 simSignal = int(getDeviceInfo['obj']['simSignal'])
-
-
 if simSignal <= 0 and simSignal >= -50:
-    simSignal = 'Excellent(' + str(simSignal)+')'
+    simSignal = 'Excelente(' + str(simSignal)+')'
 elif simSignal <= -51 and simSignal >= -75:
-    simSignal = 'Good(' + str(simSignal)+')'
+    simSignal = 'Bom(' + str(simSignal)+')'
 elif simSignal <= -76 and simSignal >= -113:
-    simSignal = 'Poor(' + str(simSignal)+')'
+    simSignal = 'Fraco(' + str(simSignal)+')'
 else:
     "Erro ao receber os dados"
 
@@ -176,11 +172,12 @@ dictGrowattApi = {
     'ipAndPort': getDeviceInfo['obj']['ipAndPort'],
     'deviceType': getDeviceInfo['obj']['deviceType'],
     'simSignal': simSignal,
+    'lost': getInverterList2['datas'][0]['lost']
 }
 
 # Send data to Telegram
-bot = telebot.TeleBot('botTokenHere')
-chatID = 'chatIdHere'
+bot = telebot.TeleBot('1432121388:AAFd_UVoDCSFmKb7uiD3EUzor8q4djHIPVA')
+chatID = '1206596200'
 
 
 @bot.message_handler(commands=['contribuicaosocial'])
@@ -241,5 +238,43 @@ def send_message(message):
                      dictGrowattApi['lastUpdateTime']
                  ))
 
+
+def notificationPotenciaZero():
+    bot.send_message(chatID, 'Nome da Usina: {} \n'
+                     'Potencia Atual: {} (W) \n'
+                     'Geracao Hoje: {} (kWh) \n'
+                     'Status da conexão: {} \n'
+                     'Qualidade da conexão: {} \n'
+                     'Ultima atualização: {}'.format(
+                         dictGrowattApi['plantName'],
+                         dictGrowattApi['pac'],
+                         dictGrowattApi['eToday'],
+                         dictGrowattApi['status'],
+                         dictGrowattApi['simSignal'],
+                         dictGrowattApi['lastUpdateTime']
+                     ))
+
+
+def notificationStatus():
+    bot.send_message(chatID, 'Nome da Usina: {} \n'
+                     'Potencia Atual: {} (W) \n'
+                     'Geracao Hoje: {} (kWh) \n'
+                     'Status da conexão: {} \n'
+                     'Qualidade da conexão: {} \n'
+                     'Ultima atualização: {}'.format(
+                         dictGrowattApi['plantName'],
+                         dictGrowattApi['pac'],
+                         dictGrowattApi['eToday'],
+                         dictGrowattApi['status'],
+                         dictGrowattApi['simSignal'],
+                         dictGrowattApi['lastUpdateTime']
+                     ))
+
+
+if dictGrowattApi['lost'] == False:
+    if dictGrowattApi['pac'] == 0:
+        notificationPotenciaZero()
+    if dictGrowattApi['status'] != "1-Conectado":
+        notificationStatus()
 
 bot.infinity_polling()
