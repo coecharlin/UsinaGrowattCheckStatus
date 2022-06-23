@@ -1,125 +1,8 @@
-import json
-import requests
 import telebot
+import growatt
 
 
-session = requests.Session()
-
-
-class GrowattApi:
-
-    server_url = 'http://server.growatt.com/login/toSharePlant/85AF9942EEC03C351D39D9E5DBE387F208D6904CE2151AD38FF249B3786234B9A5ECCF246BCB86447FD92A7E26F3270C'
-
-    def getWeatherByPlantId(self, plantId):
-        session.get(self.server_url)
-        response = session.post(
-            'http://server.growatt.com/index/getWeatherByPlantId',
-            params={
-                'plantId': plantId
-            })
-        data = json.loads(response.content.decode('utf-8'))
-        return data
-
-    def getPlantData(self, plantId):
-        session.get(self.server_url)
-        response = session.post(
-            'http://server.growatt.com/panel/getPlantData',
-            params={
-                'plantId': plantId
-            })
-        data = json.loads(response.content.decode('utf-8'))
-        return data
-
-    def getInvDayChart(self, plantId, date):
-        session.get(self.server_url)
-        response = session.post(
-            'http://server.growatt.com/panel/inv/getInvDayChart',
-            params={
-                'date': date,
-                'plantId': plantId
-            })
-        data = json.loads(response.content.decode('utf-8'))
-        return data
-
-    def getInvMonthChart(self, plantId, date):
-        session.get(self.server_url)
-        response = session.post(
-            'http://server.growatt.com/panel/inv/getInvMonthChart',
-            params={
-                'date': date,
-                'plantId': plantId
-            })
-        data = json.loads(response.content.decode('utf-8'))
-        return data
-
-    def getInvYearChart(self, plantId, year):
-        session.get(self.server_url)
-        response = session.post(
-            'http://server.growatt.com/panel/inv/getInvYearChart',
-            params={
-                'year': year,
-                'plantId': plantId
-            })
-        data = json.loads(response.content.decode('utf-8'))
-        return data
-
-    def getInvTotalChart(self, plantId, year):
-        session.get(self.server_url)
-        response = session.post(
-            'http://server.growatt.com/panel/inv/getInvTotalChart',
-            params={
-                'year': year,
-                'plantId': plantId
-            })
-        data = json.loads(response.content.decode('utf-8'))
-        return data
-
-    def getInvTotalData(self, plantId):
-        session.get(self.server_url)
-        response = session.post(
-            'http://server.growatt.com/panel/inv/getInvTotalData',
-            params={
-                'plantId': plantId
-            })
-        data = json.loads(response.content.decode('utf-8'))
-        return data
-
-    def getInverterList2(self, plantId):
-        session.get(self.server_url)
-        response = session.post(
-            'http://server.growatt.com/device/getInverterList2',
-            params={
-                'invSn': '',
-                'plantId': plantId,
-                'currPage': 1
-            })
-        data = json.loads(response.content.decode('utf-8'))
-        return data
-
-    def getPlantTotalData(self, plantId):
-        session.get(self.server_url)
-        response = session.post(
-            'http://server.growatt.com/device/getPlantTotalData',
-            params={
-                'plantId': plantId
-            })
-        data = json.loads(response.content.decode('utf-8'))
-        return data
-
-    def getDeviceInfo(self, plantId, deviceTypeName, sn):
-        session.get(self.server_url)
-        response = session.post(
-            'http://server.growatt.com/panel/getDeviceInfo',
-            params={
-                'plantId': plantId,
-                'deviceTypeName': deviceTypeName,
-                'sn': sn
-            })
-        data = json.loads(response.content.decode('utf-8'))
-        return data
-
-
-api = GrowattApi()
+api = growatt.GrowattApi()
 
 getPlantData = api.getPlantData(644575)
 getInvTotalData = api.getInvTotalData(644575)
@@ -176,18 +59,19 @@ dictGrowattApi = {
 }
 
 # Send data to Telegram
-bot = telebot.TeleBot('1432121388:AAFd_UVoDCSFmKb7uiD3EUzor8q4djHIPVA')
+bot = telebot.TeleBot(
+    '1432121388:AAFSKhSkDiDmkuX-8Azj8d3R5Fli5Wc50qw', parse_mode="markdown")
 chatID = '1206596200'
 
 
 @bot.message_handler(commands=['contribuicaosocial'])
 def send_message(message):
     bot.reply_to(message,
-                 'Nome da Usina: {} \n'
-                 'CO₂ reduzido: {} \n'
-                 'Árvores salvas: {} \n'
-                 'Economia carvão: {} \n'
-                 'Ultima atualização: {}'.format(
+                 '*Nome da Usina:* `{}` \n'
+                 '*CO₂ reduzido:* `{}` \n'
+                 '*Árvores salvas:* `{}` \n'
+                 '*Economia carvão:* `{}` \n'
+                 '*Ultima atualização:* `{}`'.format(
                      dictGrowattApi['plantName'],
                      dictGrowattApi['co2'],
                      dictGrowattApi['tree'],
@@ -199,18 +83,18 @@ def send_message(message):
 @bot.message_handler(commands=['resumo'])
 def send_message(message):
     bot.reply_to(message,
-                 'Nome da Usina: {} \n'
+                 '*Nome da Usina:* `{}` \n'
                  '\n'
-                 'Energia Hoje: {}(kWh) \n'
-                 'Rendimento Hoje: {} \n'
+                 '*Energia Hoje:* `{}(kWh)` \n'
+                 '*Rendimento Hoje:* `{}` \n'
                  '\n'
-                 'Energia Mensal: {}(kWh) \n'
-                 'Rendimento Mensal: R$ {} \n'
+                 '*Energia Mensal:* `{}(kWh)` \n'
+                 '*Rendimento Mensal:* R$ `{}` \n'
                  '\n'
-                 'Energia Total: {}(kWh) \n'
-                 'Rendimento Total: {} \n'
+                 '*Energia Total:* `{}(kWh)` \n'
+                 '*Rendimento Total:* `{}` \n'
                  '\n'
-                 'Ultima atualização: {}'.format(
+                 '*Ultima atualização:* `{}`'.format(
                      dictGrowattApi['plantName'],
                      dictGrowattApi['eToday'],
                      dictGrowattApi['mToday'],
@@ -224,12 +108,12 @@ def send_message(message):
 
 @bot.message_handler(commands=['status'])
 def send_message(message):
-    bot.reply_to(message, 'Nome da Usina: {} \n'
-                 'Potencia Atual: {} (W) \n'
-                 'Geracao Hoje: {} (kWh) \n'
-                 'Status da conexão: {} \n'
-                 'Qualidade da conexão: {} \n'
-                 'Ultima atualização: {}'.format(
+    bot.reply_to(message, '*Nome da Usina:* `{}` \n'
+                 '*Potencia Atual:* `{}(W)` \n'
+                 '*Geracao Hoje:* `{}(kWh)` \n'
+                 '*Status da conexão:* `{}` \n'
+                 '*Qualidade da conexão:* `{}` \n'
+                 '*Ultima atualização:* `{}`'.format(
                      dictGrowattApi['plantName'],
                      dictGrowattApi['pac'],
                      dictGrowattApi['eToday'],
@@ -240,28 +124,23 @@ def send_message(message):
 
 
 def notificationPotenciaZero():
-    bot.send_message(chatID, 'Nome da Usina: {} \n'
-                     'Potencia Atual: {} (W) \n'
-                     'Geracao Hoje: {} (kWh) \n'
-                     'Status da conexão: {} \n'
-                     'Qualidade da conexão: {} \n'
-                     'Ultima atualização: {}'.format(
+    bot.send_message(chatID, '*Nome da Usina:* `{}` \n'
+                     '*Potencia Atual:* `{}(W)` \n'
+                     '*Status da conexão:* `{}` \n'
+                     '*Ultima atualização:* `{}`'.format(
                          dictGrowattApi['plantName'],
                          dictGrowattApi['pac'],
-                         dictGrowattApi['eToday'],
                          dictGrowattApi['status'],
-                         dictGrowattApi['simSignal'],
                          dictGrowattApi['lastUpdateTime']
                      ))
 
 
 def notificationStatus():
-    bot.send_message(chatID, 'Nome da Usina: {} \n'
-                     'Potencia Atual: {} (W) \n'
-                     'Geracao Hoje: {} (kWh) \n'
-                     'Status da conexão: {} \n'
-                     'Qualidade da conexão: {} \n'
-                     'Ultima atualização: {}'.format(
+    bot.send_message(chatID, '*Nome da Usina:* `{}` \n'
+                     '*Potencia Atual:* `{}(W)` \n'
+                     '*Status da conexão:* `{}` \n'
+                     '*Qualidade da conexão:* `{}` \n'
+                     '*Ultima atualização:* `{}`'.format(
                          dictGrowattApi['plantName'],
                          dictGrowattApi['pac'],
                          dictGrowattApi['eToday'],
