@@ -3,6 +3,8 @@
 This Python 3 script logs into server.growatt.com, retrieves the data of your solar panels and sends it to your Telegram bot.
 
 ![alt text](https://github.com/coecharlin/UsinaGrowattCheckStatus/blob/main/img/contribuicaoSocial.PNG)
+![alt text](https://github.com/coecharlin/UsinaGrowattCheckStatus/blob/main/img/status.PNG)
+![alt text](https://github.com/coecharlin/UsinaGrowattCheckStatus/blob/main/img/resumo.PNG)
 
 ## Requirements:
  - Python 3
